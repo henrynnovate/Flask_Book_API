@@ -1,5 +1,5 @@
 # Import necessary modules
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 import db
 from flask_cors import CORS
 
@@ -15,7 +15,7 @@ db.create_table()
 # Define route for serving the frontend HTML file
 @app.route('/')
 def index():
-    return app.send_static_file('frontend.html')
+   return render_template('frontend.html')
 
 # Define route for handling GET and POST requests to '/books'
 @app.route('/books', methods=['GET', 'POST'])
