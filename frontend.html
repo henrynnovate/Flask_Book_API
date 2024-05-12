@@ -43,7 +43,7 @@
         $(document).ready(function () {
             // Function to fetch and display all books
             const fetchBooks = async () => {
-                const response = await fetch('http://127.0.0.1:5000/books');
+                const response = await fetch('https://flask-book-api.vercel.app/books');
                 const books = await response.json();
 
                 const bookList = $('#bookList');
@@ -75,7 +75,7 @@
 
                 if ($('#submitBtn').text() === 'Add Book') {
                     // Add book request
-                    await fetch('http://127.0.0.1:5000/books', {
+                    await fetch('https://flask-book-api.vercel.app/books', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -90,7 +90,7 @@
                 } else if ($('#submitBtn').text() === 'Update Book') {
                     // Update book request
                     const bookId = $('#submitBtn').data('id');
-                    await fetch(`http://127.0.0.1:5000/books/${bookId}`, {
+                    await fetch(`https://flask-book-api.vercel.app/books/${bookId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -115,7 +115,7 @@
             $(document).on('click', '.delete-btn', async function () {
                 const bookId = $(this).data('id');
                 // Delete book request
-                await fetch(`http://127.0.0.1:5000/books/${bookId}`, {
+                await fetch(`https://flask-book-api.vercel.app/books/${bookId}`, {
                     method: 'DELETE'
                 });
                 // Update the book list after deletion
@@ -126,7 +126,7 @@
             $(document).on('click', '.update-btn', async function () {
                 const bookId = $(this).data('id');
                 // Fetch the book details for update
-                const response = await fetch(`http://127.0.0.1:5000/books/${bookId}`);
+                const response = await fetch(`https://flask-book-api.vercel.app/books/${bookId}`);
                 const book = await response.json();
 
                 // Populate the form fields with book details for update
