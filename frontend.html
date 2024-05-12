@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Management</title>
+    <!-- Styling for the book items -->
+    <style>
+        .book-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .book-item p {
+            margin-right: 10px;
+        }
+        .book-item button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+   
+
+    <!-- Form to add or update a book -->
+    <form id="bookForm">
+        <input type="text" id="title" placeholder="Title" required>
+        <input type="text" id="author" placeholder="Author" required>
+        <input type="text" id="publisher" placeholder="Publisher" required>
+        <input type="text" id="language" placeholder="Language" required>
+        <!-- Button to submit the form -->
+        <button id="submitBtn" type="submit">Add Book</button>
+    </form>
+
+     <!-- Container to display book list -->
+     <div id="bookList"></div>
+
+     
+    <!-- jQuery library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- JavaScript code -->
+    <script>
+        $(document).ready(function () {
+            // Function to fetch and display all books
+            const fetchBooks = async () => {
+                const response = await fetch('http://127.0.0.1:5000/books');
+                const books = await response.json();
+
+                const bookList = $('#bookList');
+                bookList.empty();
+
+                books.forEach(book => {
+                    // Display each book item in a row format with delete and update buttons
+                    const bookItem = $(`
+                        <div class="book-item">
+                            <p><strong>Title:</strong> ${book.title}</p>
+                            <p><strong>Author:</strong> ${book.author}</p>
+                            <p><strong>Publisher:</strong> ${book.publisher}</p>
+                            <p><strong>Language:</strong> ${book.language}</p>
+                            <button class="delete-btn" data-id="${book.id}">Delete</button>
+                            <button class="update-btn" data-id="${book.id}">Update</button>
+                        </div>
+                    `);
+                    bookList.append(bookItem);
+                });
+            };
+
+            // Event listener for form submission to add or update a book
+            $('#bookForm').submit(async function (event) {
+                event.preventDefault();
+                const title = $('#title').val();
+                const author = $('#author').val();
+                const publisher = $('#publisher').val();
+                const language = $('#language').val();
+
+                if ($('#submitBtn').text() === 'Add Book') {
+                    // Add book request
+                    await fetch('http://127.0.0.1:5000/books', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            title: title,
+                            author: author,
+                            publisher: publisher,
+                            language: language
+                        })
+                    });
+                } else if ($('#submitBtn').text() === 'Update Book') {
+                    // Update book request
+                    const bookId = $('#submitBtn').data('id');
+                    await fetch(`http://127.0.0.1:5000/books/${bookId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            title: title,
+                            author: author,
+                            publisher: publisher,
+                            language: language
+                        })
+                    });
+                    // Reset the button text to 'Add Book' after updating
+                    $('#submitBtn').text('Add Book');
+                }
+
+                // Reset the form fields and update the book list
+                this.reset();
+                await fetchBooks();
+            });
+
+            // Event listener for delete button click
+            $(document).on('click', '.delete-btn', async function () {
+                const bookId = $(this).data('id');
+                // Delete book request
+                await fetch(`http://127.0.0.1:5000/books/${bookId}`, {
+                    method: 'DELETE'
+                });
+                // Update the book list after deletion
+                await fetchBooks();
+            });
+
+            // Event listener for update button click
+            $(document).on('click', '.update-btn', async function () {
+                const bookId = $(this).data('id');
+                // Fetch the book details for update
+                const response = await fetch(`http://127.0.0.1:5000/books/${bookId}`);
+                const book = await response.json();
+
+                // Populate the form fields with book details for update
+                $('#title').val(book.title);
+                $('#author').val(book.author);
+                $('#publisher').val(book.publisher);
+                $('#language').val(book.language);
+                // Change the submit button text to 'Update Book' and store the book ID as data attribute
+                $('#submitBtn').text('Update Book').data('id', bookId);
+            });
+
+            // Fetch and display books on page load
+            fetchBooks();
+        });
+    </script>
+</body>
+</html>
