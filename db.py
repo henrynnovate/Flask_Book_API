@@ -8,7 +8,7 @@ def db_connection():
     Returns:
         pymysql.connections.Connection: The database connection object.
     """
-    conn = None
+    conn = None 
     try:
         conn = pymysql.connect(
             host=os.environ.get('DB_HOST'),

@@ -101,7 +101,7 @@ def single_book(book_id):
             'publisher': publisher,
             'language': language,
         }
-
+ 
         cursor.execute(sql_query, (title, author, publisher, language, book_id))
         conn.commit()
         return jsonify({'message': 'Book updated successfully!'}, updated_book)
